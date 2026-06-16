@@ -1,6 +1,6 @@
 FROM php:8.3-apache
 
-RUN apt-get update && apt-get install -y git unzip libzip-dev && \
+RUN apt-get update && apt-get install -y git unzip libzip-dev libsqlite3-dev && \
     docker-php-ext-install zip pdo_sqlite && \
     a2enmod rewrite
 
