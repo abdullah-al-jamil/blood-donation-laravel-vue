@@ -17,6 +17,7 @@ RUN sed -ri -e 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.c
 COPY . /var/www/html/
 WORKDIR /var/www/html
 
+RUN cp .env.example .env
 RUN composer install --no-dev --optimize-autoloader
 
 RUN chown -R www-data:www-data storage bootstrap/cache
