@@ -50,6 +50,8 @@ function formatRow(row: any) {
     ...row,
     donor: row.user?.name || row.donor?.name || '-',
     center: row.donation_center?.name || '-',
+    appointment_date: row.appointment_date?.split('T')[0] || '-',
+    appointment_time: row.appointment_date?.split('T')[1]?.slice(0, 5) || '-',
     actions: '',
   }
 }

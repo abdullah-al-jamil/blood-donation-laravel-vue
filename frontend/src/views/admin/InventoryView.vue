@@ -40,10 +40,13 @@ async function fetchData() {
   try {
     const [itemsRes, summaryRes] = await Promise.all([
       adminApi.getInventory(),
-      adminApi.getInventorySummary().catch(() => ({ data: { data: [] } })),
+      adminApi.getInventorySummary().catch(() => ({ data: { total_bags_by_type: {} } })),
     ])
     items.value = itemsRes.data.data ?? itemsRes.data ?? []
-    summary.value = summaryRes.data.data ?? summaryRes.data ?? []
+    const s = summaryRes.data ?? summaryRes
+    summary.value = s.total_bags_by_type
+      ? Object.entries(s.total_bags_by_type).map(([blood_type, bags]) => ({ blood_type, bags }))
+      : []
   } catch {
     toast.add('Failed to load inventory', 'error')
   } finally {
@@ -117,7 +120,17 @@ onMounted(fetchData)
     </div>
 
     <AppCard>
-      <AppTable :columns="columns" :data="items.map((r: any) => ({ ...r, status: r.status || 'available' }))" :loading="loading" empty-text="No inventory found." />
+      <AppTable :columns="columns" :data="items.map((r: any) => ({ ...r, status: r.status || 'available' }))" :loading="loading" empty-text="No inventory found.">
+        <template #cell-status="{ row }">
+          <AppBadge :variant="statusVariant(row.status)">{{ row.status }}</AppBadge>
+        </template>
+        <template #cell-actions="{ row }">
+          <div class="flex gap-2">
+            <AppButton size="sm" variant="secondary" @click="openEdit(row)">Edit</AppButton>
+            <AppButton size="sm" variant="danger" @click="handleDelete(row.id)">Delete</AppButton>
+          </div>
+        </template>
+      </AppTable>
     </AppCard>
 
     <AppModal :visible="showModal" :title="editing ? 'Edit Inventory' : 'Add Inventory'" @close="showModal = false">

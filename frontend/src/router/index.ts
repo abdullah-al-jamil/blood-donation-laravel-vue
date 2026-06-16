@@ -64,13 +64,15 @@ router.beforeEach((to, _from, next) => {
   }
 
   if (to.meta.guest && token) {
-    if (user?.role === 'admin') return next('/admin')
-    return next('/donor')
+    const guestRedirect = user?.role === 'admin' ? '/admin' : '/donor'
+    if (to.path === guestRedirect) return next()
+    return next(guestRedirect)
   }
 
   if (to.meta.role && user?.role !== to.meta.role) {
-    if (user?.role === 'admin') return next('/admin')
-    return next('/donor')
+    const roleRedirect = user?.role === 'admin' ? '/admin' : '/donor'
+    if (to.path === roleRedirect) return next()
+    return next(roleRedirect)
   }
 
   next()

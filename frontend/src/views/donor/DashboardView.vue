@@ -16,6 +16,13 @@ const upcomingAppointments = ref<any[]>([])
 const recentRequests = ref<any[]>([])
 const loading = ref(true)
 
+const formatDate = (value: string | null) => {
+  if (!value) return ''
+  const d = new Date(value)
+  if (isNaN(d.getTime())) return String(value)
+  return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+}
+
 onMounted(async () => {
   try {
     const [donationsRes, aptsRes, requestsRes] = await Promise.all([
@@ -26,8 +33,8 @@ onMounted(async () => {
     const donations = donationsRes.data.data ?? donationsRes.data ?? []
     const appointments = aptsRes.data.data ?? aptsRes.data ?? []
     const bloodRequests = requestsRes.data.data ?? requestsRes.data ?? []
-
-    const completed = donations.filter((d: any) => d.status === 'completed')
+    console.log('Donations:', donations)
+    const completed = donations.filter((d: any) => d.appointment?.status === 'completed')
     stats.value = {
       totalDonations: completed.length,
       lastDonation: completed.length > 0 ? completed[completed.length - 1].donation_date : null,
@@ -93,7 +100,7 @@ onMounted(async () => {
           <div v-for="apt in upcomingAppointments" :key="apt.id" class="flex items-center justify-between py-2 border-b last:border-0">
             <div>
               <p class="text-sm font-medium text-gray-900">{{ apt.donation_center?.name || 'Center' }}</p>
-              <p class="text-xs text-gray-500">{{ apt.appointment_date }} at {{ apt.appointment_time }}</p>
+              <p class="text-xs text-gray-500">{{ formatDate(apt.appointment_date) }}<span v-if="apt.appointment_time"> at {{ apt.appointment_time }}</span></p>
             </div>
             <AppBadge variant="info">Scheduled</AppBadge>
           </div>

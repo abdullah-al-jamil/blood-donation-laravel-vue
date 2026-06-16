@@ -29,7 +29,11 @@ onMounted(() => {
 async function handleCreate() {
   submitting.value = true
   try {
-    await appointmentsStore.createAppointment(form.value)
+    const payload = {
+      center_id: form.value.donation_center_id,
+      appointment_date: `${form.value.appointment_date} ${form.value.appointment_time}`,
+    }
+    await appointmentsStore.createAppointment(payload)
     toast.add('Appointment booked!', 'success')
     showModal.value = false
     form.value = { donation_center_id: '', appointment_date: '', appointment_time: '' }
@@ -60,17 +64,16 @@ function formatRow(row: any) {
   return {
     ...row,
     donation_center: row.donation_center?.name || '-',
+    appointment_date: row.appointment_date?.split('T')[0] || '-',
+    appointment_time: row.appointment_date?.split('T')[1]?.slice(0, 5) || '-',
     status: row.status || 'scheduled',
-    actions: row.status === 'scheduled'
-      ? `<button class="text-red-600 hover:text-red-800 text-sm font-medium" data-action="cancel" data-id="${row.id}">Cancel</button>`
-      : '-',
   }
 }
 </script>
 
 <template>
   <div>
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between gap-2 mb-6 flex-wrap">
       <h1 class="text-2xl font-bold text-gray-900">My Appointments</h1>
       <AppButton @click="showModal = true">Book Appointment</AppButton>
     </div>
@@ -81,7 +84,22 @@ function formatRow(row: any) {
         :data="appointmentsStore.list.map(formatRow)"
         :loading="appointmentsStore.loading"
         empty-text="No appointments found."
-      />
+      >
+        <template #cell-status="{ row }">
+          <AppBadge :variant="statusVariant(row.status)">{{ row.status }}</AppBadge>
+        </template>
+        <template #cell-actions="{ row }">
+          <AppButton
+            v-if="row.status === 'scheduled'"
+            size="sm"
+            variant="danger"
+            @click="handleCancel(row.id)"
+          >
+            Cancel
+          </AppButton>
+          <span v-else>-</span>
+        </template>
+      </AppTable>
     </AppCard>
 
     <AppModal :visible="showModal" title="Book Appointment" @close="showModal = false">
@@ -94,7 +112,7 @@ function formatRow(row: any) {
           required
         />
         <AppFormInput v-model="form.appointment_date" label="Date" type="date" required />
-        <AppFormInput v-model="form.appointment_time" label="Time" type="text" placeholder="e.g. 10:00" required />
+        <AppFormInput v-model="form.appointment_time" label="Time" type="time" required />
       </form>
       <template #footer>
         <AppButton variant="secondary" @click="showModal = false">Cancel</AppButton>

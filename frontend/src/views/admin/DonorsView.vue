@@ -51,7 +51,7 @@ function formatRow(row: any) {
     blood_type: row.blood_type || '-',
     phone: row.phone || '-',
     is_eligible: row.is_eligible ? 'Eligible' : 'Not Eligible',
-    last_donation_at: row.last_donation_at || 'Never',
+    last_donation_at: row.last_donation_at ? row.last_donation_at.split('T')[0] : 'Never',
     actions: '',
   }
 }

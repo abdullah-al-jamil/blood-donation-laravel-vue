@@ -38,7 +38,7 @@ function formatRow(row: any) {
     ...row,
     donation_center: row.donation_center?.name || '-',
     blood_type: row.blood_type || (row as any).donor?.blood_type || '-',
-    status: row.status || 'completed',
+    status: row.appointment?.status || 'completed',
   }
 }
 </script>

@@ -33,6 +33,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/blood-requests', [BloodRequestController::class, 'store']);
     Route::get('/my-blood-requests', [BloodRequestController::class, 'myRequests']);
 
+    Route::prefix('donor')->group(function () {
+        Route::get('/appointments', [AppointmentController::class, 'index']);
+        Route::get('/appointments/{appointment}', [AppointmentController::class, 'show']);
+        Route::post('/appointments', [AppointmentController::class, 'store']);
+        Route::put('/appointments/{appointment}', [AppointmentController::class, 'update']);
+        Route::delete('/appointments/{appointment}', [AppointmentController::class, 'destroy']);
+        Route::get('/donations', [DonationController::class, 'index']);
+        Route::get('/donations/{donation}', [DonationController::class, 'show']);
+    });
+
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
 
@@ -40,7 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('/appointments', AppointmentController::class)->except(['store']);
         Route::get('/all-appointments', [AppointmentController::class, 'adminIndex']);
         Route::apiResource('/donations', DonationController::class);
-        Route::apiResource('/inventory', BloodInventoryController::class)->except(['index']);
+        Route::get('/inventory/summary', [BloodInventoryController::class, 'summary']);
+        Route::apiResource('/inventory', BloodInventoryController::class);
         Route::apiResource('/blood-requests', BloodRequestController::class)->except(['show', 'store']);
         Route::put('/blood-requests/{bloodRequest}/fulfill', [BloodRequestController::class, 'fulfill']);
 

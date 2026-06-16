@@ -13,15 +13,17 @@ class AppointmentController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if ($request->user()->role === 'admin' && $request->has('user_id')) {
-            $appointments = Appointment::where('user_id', $request->user_id)
-                ->with(['user', 'donationCenter'])
-                ->paginate(20);
+        if ($request->user()->role === 'admin') {
+            if ($request->has('user_id')) {
+                $appointments = Appointment::where('user_id', $request->user_id);
+            } else {
+                $appointments = Appointment::query();
+            }
         } else {
-            $appointments = Appointment::where('user_id', $request->user()->id)
-                ->with(['user', 'donationCenter'])
-                ->paginate(20);
+            $appointments = Appointment::where('user_id', $request->user()->id);
         }
+
+        $appointments = $appointments->with(['user', 'donationCenter'])->paginate(20);
 
         return response()->json(AppointmentResource::collection($appointments));
     }
