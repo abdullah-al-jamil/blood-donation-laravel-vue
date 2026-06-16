@@ -10,4 +10,6 @@ php artisan migrate --force
 
 php artisan storage:link
 
+php artisan package:discover --ansi
+
 exec apache2-foreground
