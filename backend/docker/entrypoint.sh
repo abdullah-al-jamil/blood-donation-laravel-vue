@@ -6,7 +6,7 @@ touch "$DB_PATH"
 
 php artisan key:generate --force
 
-php artisan migrate --force
+php artisan migrate --force --seed
 
 php artisan storage:link
 
