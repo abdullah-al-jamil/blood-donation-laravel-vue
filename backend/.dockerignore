@@ -1,0 +1,10 @@
+.git
+.gitignore
+.gitattributes
+vendor
+node_modules
+.npmrc
+storage/framework/cache/data/*
+storage/logs/*.log
+.env
+docker
