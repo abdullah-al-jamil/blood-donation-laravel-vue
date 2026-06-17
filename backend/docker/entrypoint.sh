@@ -1,8 +1,10 @@
 #!/bin/bash
 set -e
 
-DB_PATH="/var/www/html/storage/database.sqlite"
+DB_PATH="/var/www/html/database/database.sqlite"
 touch "$DB_PATH"
+chown www-data:www-data "$DB_PATH"
+chmod 664 "$DB_PATH"
 
 php artisan key:generate --force
 

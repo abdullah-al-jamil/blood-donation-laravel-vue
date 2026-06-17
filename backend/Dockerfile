@@ -20,7 +20,7 @@ WORKDIR /var/www/html
 RUN cp .env.example .env
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache database
 
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
